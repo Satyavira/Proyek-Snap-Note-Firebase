@@ -1,0 +1,231 @@
+.header {
+  position: relative;
+}
+
+.header-content {
+  display: flex;
+  transition: left 0.8s ease, top 0.8s ease;
+}
+
+.sidebar-wrap:hover + .content .header-content {
+  left: 280px;
+}
+
+.containers {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+.welcome {
+  position: absolute;
+  left: 60px;
+  top: 15px;
+  font-weight: bold;
+}
+
+.date {
+  position: absolute;
+  left: 60px;
+  top: 65px;
+}
+
+.note:hover {
+  cursor: pointer;
+  background-color: #bcbcfd;
+  box-shadow: 0px 0px 10px 3px #a8a9a9;
+}
+
+.note {
+  max-height: 227px;
+  min-height: 200px;
+  max-width: 227px;
+  overflow: hidden;
+  border-radius: 17px;
+  background-color: #e6e6fa;
+  border: 0;
+  box-shadow: 4px 4px 4px 0 #a8a9a9;
+}
+
+.sidebar-wrap {
+  position: fixed;
+  z-index: 1;
+  width: 60px;
+  height: 100vh;
+  background-color: #3979dc;
+  color: #fff;
+  padding: 10px;
+  transition: 0.8s;
+  overflow: hidden;
+}
+
+.content {
+  margin-left: 60px;
+}
+
+.sidebar-wrap:hover {
+  width: 280px;
+}
+
+.sidebar-wrap:hover .logo-wrap span {
+  display: flex;
+}
+
+.sidebar-wrap:hover .nav li .nav-link span {
+  display: flex;
+}
+
+.sidebar-wrap:hover .dropdown-wrap strong {
+  display: flex;
+}
+
+.sidebar-wrap:hover .dropdown-wrap::after {
+  display: inline-block;
+}
+
+.sidebar-wrap:hover .dropdown-wrap {
+  justify-content: flex-start;
+}
+
+.sidebar-wrap .logo-wrap {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-wrap .logo-wrap span {
+  font-size: 18px;
+}
+
+.sidebar-wrap .logo-wrap .icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  min-width: 40px;
+}
+
+.sidebar-wrap .nav {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-wrap: nowrap;
+}
+
+.sidebar-wrap .nav::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  background-color: #f5f5f5;
+}
+
+.sidebar-wrap .nav::-webkit-scrollbar {
+  width: 5px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.sidebar-wrap .nav::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #9b9b9b;
+}
+
+.sidebar-wrap .nav li {
+  margin-top: 5px;
+}
+
+.sidebar-wrap .nav li .nav-link {
+  color: #fff;
+  padding: 0;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sidebar-wrap .nav li .nav-link .icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  min-width: 40px;
+}
+
+.sidebar-wrap .nav li .nav-link span {
+  font-size: 16px;
+}
+
+.sidebar-wrap .nav li .nav-link.active {
+  background-color: #1456bd;
+}
+
+.sidebar-wrap .nav li .nav-link:hover {
+  background-color: #ffa200;
+}
+
+.sidebar-wrap .dropdown-wrap {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  gap: 15px;
+  font-size: 16px;
+}
+
+.sidebar-wrap .dropdown-wrap .icon-wrap {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  min-height: 250px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link:hover,
+.nav-link.active:hover {
+  background-color: #525252;
+}
+
+.nav-link .material-symbols-outlined {
+  transition: all 1s;
+}
+
+.nav-link:hover .material-symbols-outlined {
+  transform: rotate(360deg);
+}
+
+/* inactive is used in setting.html and in javascript */
+.inactive {
+  display: none;
+}
+
+/* Use in setting.html because when the it goes smaller the margin is too big */
+@media only screen and (max-width: 900px) {
+  .setting-details {
+    margin-left: 250px !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  /*Big smartphones [426px -> 600px]*/
+  .sidebar-wrap {
+    height: 100%;
+    z-index: 9;
+  }
+  .background form {
+    margin-top: 20px;
+  }
+  .background button {
+    margin-bottom: 20px;
+  }
+  .note-wrap {
+    width: 230px;
+  }
+}
