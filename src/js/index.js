@@ -41,8 +41,8 @@ const provider = new GoogleAuthProvider();
 var noteId;
 
 const colNotes = collection(db, "notes");
-let queries = query(colNotes, orderBy("createdAt"));
-const colArchive = collection(db, "archive");
+const currentUser = collection(db, "current")
+// const colArchive = collection(db, "archive");
 var docArchive;
 
 const googleVerification = document.querySelector(".login-with-google-btn");
@@ -62,8 +62,20 @@ const labelTag = document.querySelector(".modal-note-label");
 const contentTag = document.querySelector(".modal-note-content");
 const label = document.querySelector(".label");
 const labelList = document.querySelector(".labelList");
+const welcome = document.querySelector(".welcome");
+const archive = document.querySelector(".archive-welcome")
+const labelWelcome = document.querySelector(".label-welcome")
+const date = document.querySelector(".date")
+const username = document.querySelector(".username");
+const myUsername = document.querySelector(".userName");
+const picture = document.querySelectorAll(".rounded-circle")
+const emailSetting = document.querySelector(".email")
+const inputPassword = document.querySelector("passwordUser")
+const changePassword = document.querySelector("change-password")
 let selectedLabel
 let colRef
+let userId
+let queries = query(colNotes, where("userId","==",`${userId}`), orderBy("createdAt"));
 
 const handleGoogleVerification = () => {
   signInWithPopup(auth, provider)
@@ -110,6 +122,24 @@ const getCurrentDate = () => {
   return dd + "-" + mm + "-" + yyyy;
 };
 
+// fungsi untuk mendapatkan tanggal dan hari sekarang
+function getCurrentDateAndDay() {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+  
+    const now = new Date();
+    const dayOfWeek = days[now.getDay()];
+    const month = months[now.getMonth()];
+  
+    const date = now.getDate();
+    const year = now.getFullYear();
+  
+    return `${dayOfWeek}, ${date} ${month} ${year}`;
+}
+
 const showNotes = () => {
   document.querySelectorAll(".note-wrap").forEach((note) => note.remove());
   getDocs(queries)
@@ -129,11 +159,7 @@ const showNotes = () => {
                               <p class="card-text">${data.content}</p>
                           </div>
                       </div>`;
-
         document.querySelector(".background .row").innerHTML += divTag;
-        if (window.location.pathname === "src/html/label.html") {
-          checkLabel();
-        }
       });
     })
     .catch((err) => {
@@ -146,23 +172,107 @@ const updateLabelButton = () => {
   labelButton.innerText = selectedLabel;
 };
 
-const checkLabel = () => {
-  getDocs(colRef)
+const checkLabel = async () => {
+  await getDocs(colRef)
     .then((snapshot) => {
       snapshot.docs.forEach((doc) => {
         let inside = { ...doc.data(), id: doc.id };
-        if (!(inside.label in arrayOfLabel)) {
+        if (!(inside.label in arrayOfLabel) && inside.label !== "") {
           arrayOfLabel.push(inside.label);
           let divTag = `<li><a class="dropdown-item" href="#">${inside.label}</a></li>`;
-          labelList.innerHTML += divTag;
-          console.log(labelList.innerHTML);
+          if (arrayOfLabel.length == 1) {
+            labelList.innerHTML = divTag;
+            selectedLabel = inside.label != "" ? inside.label : "None";
+            updateLabelButton();
+          }
+          else {
+            labelList.innerHTML += divTag
+          }
         }
       });
     })
     .catch((err) => {
       console.log(err.message);
     });
+    queries = query(colNotes, where("userId","==",`${userId}`), where("label", "==", `${label.textContent !== "None" ? label.textContent : ""}`));
+    showNotes();
 };
+
+// if (window.location.pathname !== "/src/html/login.html" && window.location.pathname !== "/src/html/signup.html" && window.location.pathname !== "/src/html/index.html") {
+//   const user = auth;
+//   console.log(user)
+//   if (user != null) {
+//     // The user object has basic properties such as display name, email, etc.
+//     console.log("HHEH")
+//     const displayName = user.displayName;
+//     const email = user.email;
+//     const photoURL = user.photoURL;
+//     const emailVerified = user.emailVerified;
+//     welcome.innerText = `Welcome Back, ${displayName}!`
+//     username.innerText = displayName
+//     picture.src = photoURL
+//     emailSetting.innerText = email
+//     // The user's ID, unique to the Firebase project. Do NOT use
+//     // this value to authenticate with your backend server, if
+//     // you have one. Use User.getToken() instead.
+//     userId = user.uid;
+//     console.log(user.toJSON)
+//   }
+// }
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    // User logged in already or has just logged in.
+    userId = user.uid
+    // console.log(user.uid);
+    showNotes()
+      //     // The user object has basic properties such as display name, email, etc.
+      //     console.log("HHEH")
+    const displayName = user.displayName;
+    const email = user.email;
+    const photoURL = user.photoURL;
+    const emailVerified = user.emailVerified;
+    if (window.location.pathname !== "/src/html/settings.html") {
+      if (window.location.pathname === "/src/html/notes.html") {
+        welcome.innerText = `Welcome Back, ${displayName}!`
+        queries = query(colNotes, where("userId","==",`${userId}`), orderBy("createdAt"));
+      }
+      else if (window.location.pathname === "/src/html/archive.html") {
+        archive.innerText = `Welcome to Archive, ${displayName}!`
+        queries = query(colRef, where("userId","==",`${userId}`), orderBy("createdAt"))
+      } else {
+        labelWelcome.innerText = `Welcome to Labels, ${displayName}!`
+      }
+      date.innerText = getCurrentDateAndDay()
+    }
+    else {
+      emailSetting.innerText = email
+      myUsername.innerText = displayName
+      changePassword.addEventListener("click", () => {
+        user.updatePassword(inputPassword.value)
+        .then(() => {
+          console.log("Update Succesfull")
+        })
+        .catch((err) => {
+          console.log(err.message)
+        })
+      })
+    }
+    showNotes()
+    username.innerText = displayName
+    picture.forEach((pic) => {
+      pic.src = photoURL
+    })
+      //     // The user's ID, unique to the Firebase project. Do NOT use
+      //     // this value to authenticate with your backend server, if
+      //     // you have one. Use User.getToken() instead.
+      //     userId = user.uid;
+      //     console.log(user.toJSON)
+      //   }
+  } else {
+    // User not logged in or has just logged out.
+  }
+});
 
 if (
   window.location.pathname === "/src/html/signup.html" ||
@@ -204,7 +314,6 @@ if (window.location.pathname === "/src/html/notes.html") {
   addNoteForm.addEventListener("submit", (e) => {
     e.preventDefault();
     let noteTitle = document.getElementById("floatingInput").value;
-    console.log(noteTitle);
     let noteDate = getCurrentDate();
     let noteLabel = document.getElementById("floatingLabel").value;
     let noteContent = document.getElementById("floatingContent").value;
@@ -215,6 +324,7 @@ if (window.location.pathname === "/src/html/notes.html") {
         createdAt: serverTimestamp(),
         label: noteLabel,
         content: noteContent,
+        userId: userId
       }).then(() => {
         addNoteForm.reset();
         showNotes();
@@ -232,6 +342,7 @@ if (window.location.pathname === "/src/html/notes.html") {
         createdAt: serverTimestamp(),
         label: labelTag.value,
         content: contentTag.value,
+        userId: userId
       });
       document.querySelector(".modal-header .btn-close").click();
       showNotes();
@@ -239,8 +350,24 @@ if (window.location.pathname === "/src/html/notes.html") {
   });
 } else if (window.location.pathname === "/src/html/archive.html") {
   colRef = collection(db, "archive")
-  queries = query(colRef, orderBy("createdAt"))
+  queries = query(colRef, where("userId","==",`${userId}`), orderBy("createdAt"))
   showNotes();
+  document
+  .querySelector(".dropdown-menu.labelList")
+  .addEventListener("click", (event) => {
+      if (event.target.classList.contains("dropdown-item")) {
+        selectedLabel = event.target.textContent;
+        updateLabelButton();
+        const value = selectedLabel != "None" ? selectedLabel : "";
+        if (value == "Alphabet") {
+          queries = query(colRef, where("userId","==",`${userId}`), orderBy("title"));
+        }
+        else {
+          queries = query(colRef, where("userId","==",`${userId}`), orderBy("createdAt"))
+        }
+        showNotes();
+      }
+    });
   unarchiveBtn.addEventListener("click", (e) => {
     const docArchive = doc(db, "archive", noteId);
     e.preventDefault();
@@ -251,6 +378,7 @@ if (window.location.pathname === "/src/html/notes.html") {
         createdAt: serverTimestamp(),
         label: labelTag.value,
         content: contentTag.value,
+        userId: userId
       });
       document.querySelector(".modal-header .btn-close").click();
       showNotes();
@@ -259,23 +387,21 @@ if (window.location.pathname === "/src/html/notes.html") {
 } else if (window.location.pathname === "/src/html/labels.html") {
   var arrayOfLabel = [];
   colRef = collection(db, "notes")
-  queries = query(colRef, where("label", "==", `${label.value}`));
   selectedLabel = "None";
   document
-    .querySelector(".dropdown-menu.labelList")
-    .addEventListener("click", (event) => {
+  .querySelector(".dropdown-menu.labelList")
+  .addEventListener("click", (event) => {
       if (event.target.classList.contains("dropdown-item")) {
         selectedLabel = event.target.textContent;
         updateLabelButton();
         const value = selectedLabel != "None" ? selectedLabel : "";
-        queries = query(colRef, where("label", "==", `${value}`));
+        queries = query(colRef, where("userId","==",`${userId}`), where("label", "==", `${value}`), orderBy("createdAt"));
         showNotes();
       }
     });
-
+    
   updateLabelButton();
   checkLabel();
-  showNotes();
 
   archiveBtn.addEventListener("click", (e) => {
     // e.preventDefault(); //it is used for not refreshing the website
@@ -289,6 +415,7 @@ if (window.location.pathname === "/src/html/notes.html") {
           createdAt: serverTimestamp(),
           label: labelTag.value,
           content: contentTag.value,
+          userId: userId
         });
         document.querySelector(".modal-header .btn-close").click();
         window.location.reload();
