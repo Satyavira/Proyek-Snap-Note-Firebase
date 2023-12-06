@@ -231,7 +231,7 @@ auth.onAuthStateChanged((user) => {
       //     console.log("HHEH")
     const displayName = user.displayName != undefined ? user.displayName : user.email.split('@')[0].charAt(0).toUpperCase()+user.email.split('@')[0].slice(1);
     const email = user.email;
-    const photoURL = user.photoURL != undefined ? user.photoURL : photoURL("../img/profile picture.png");
+    const photoURL = user.photoURL != undefined ? user.photoURL : "../img/profile picture.png";
     const emailVerified = user.emailVerified;
     if (window.location.href !== "https://snapnote-eef4b.web.app/html/settings.html") {
       if (window.location.href == "https://snapnote-eef4b.web.app/html/notes.html") {
