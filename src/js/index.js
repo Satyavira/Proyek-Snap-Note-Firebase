@@ -25,13 +25,13 @@ import {
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAL1QjE7nA-pMY8Nyz_p5D7ysGALpnonqc",
-  authDomain: "snapnote-eef4b.firebaseapp.com",
-  projectId: "snapnote-eef4b",
-  storageBucket: "snapnote-eef4b.appspot.com",
-  messagingSenderId: "1080598009363",
-  appId: "1:1080598009363:web:72419cd59277a5723311e6",
-  measurementId: "G-1ZWJWBWT8T"
+  apiKey: "API_KEY",
+  authDomain: "AUTH_DOMAIN",
+  projectId: "PROJECT_ID",
+  storageBucket: "STORAGE_BUCKET",
+  messagingSenderId: "MESSAGE_SENDER_ID",
+  appId: "APP_ID",
+  measurementId: "MEASUREMENT_ID",
 };
 
 initializeApp(firebaseConfig);
@@ -49,7 +49,7 @@ var docArchive;
 const googleVerification = document.querySelector(".login-with-google-btn");
 const signUpForm = document.querySelector(".sign-up-form");
 const loginForm = document.querySelector(".login-form");
-const signout = document.querySelector(".sign-out");
+const signout = document.querySelector("a .sign-out");
 const addNoteForm = document.getElementById("addNoteForm");
 const updateBtn = document.querySelector(".update-btn");
 const deleteBtn = document.querySelector(".delete-btn");
@@ -83,7 +83,7 @@ const handleGoogleVerification = () => {
     .then((result) => {
       const user = result.user;
       console.log(user);
-      window.location.href = "https://snapnote-eef4b.web.app/html/notes.html";
+      window.location.href = "http://localhost:5000/html/notes.html";
     })
     .catch((err) => {
       console.log(err.message);
@@ -95,7 +95,7 @@ const handleSignUpForm = (e, username, password, action) => {
   action(auth, username, password)
     .then((cred) => {
       console.log(`User ${cred.user.uid} created`);
-      window.location.href = "https://snapnote-eef4b.web.app/html/login.html";
+      window.location.href = "http://localhost:5000/html/login.html";
     })
     .catch((err) => {
       console.log(err.message);
@@ -107,7 +107,7 @@ const handleLoginForm = (e, username, password, action) => {
   action(auth, username, password)
     .then((cred) => {
       console.log(`User ${cred.user.id} logged in`);
-      window.location.href = "https://snapnote-eef4b.web.app/html/notes.html";
+      window.location.href = "http://localhost:5000/html/notes.html";
     })
     .catch((err) => {
       console.log(err.message);
@@ -233,12 +233,12 @@ auth.onAuthStateChanged((user) => {
     const email = user.email;
     const photoURL = user.photoURL != undefined ? user.photoURL : "../img/profile picture.png";
     const emailVerified = user.emailVerified;
-    if (window.location.href !== "https://snapnote-eef4b.web.app/html/settings.html") {
-      if (window.location.href == "https://snapnote-eef4b.web.app/html/notes.html") {
+    if (window.location.href !== "http://localhost:5000/html/settings.html") {
+      if (window.location.href == "http://localhost:5000/html/notes.html") {
         welcome.innerText = `Welcome Back, ${displayName}!`
         queries = query(colNotes, where("userId","==",`${userId}`), orderBy("createdAt"));
       }
-      else if (window.location.href == "https://snapnote-eef4b.web.app/html/archive.html") {
+      else if (window.location.href == "http://localhost:5000/html/archive.html") {
         archive.innerText = `Welcome to Archive, ${displayName}!`
         queries = query(colRef, where("userId","==",`${userId}`), orderBy("createdAt"))
       } else {
@@ -276,12 +276,12 @@ auth.onAuthStateChanged((user) => {
 });
 
 if (
-  window.location.href == "https://snapnote-eef4b.web.app/html/signup.html" ||
-  window.location.href == "https://snapnote-eef4b.web.app/html/login.html"
+  window.location.href == "http://localhost:5000/html/signup.html" ||
+  window.location.href == "http://localhost:5000/html/login.html"
 ) {
   googleVerification.addEventListener("click", handleGoogleVerification);
 
-  if (window.location.href == "https://snapnote-eef4b.web.app/html/signup.html") {
+  if (window.location.href == "http://localhost:5000/html/signup.html") {
     signUpForm.addEventListener("submit", (e) => {
       const username = document.querySelector("#username").value;
       const password = document.querySelector("#password").value;
@@ -295,21 +295,23 @@ if (
     });
   }
 } else {
-  signout.addEventListener("click", () => {
-    signOut(auth)
-      .then(() => {
-        window.location.href = "https://snapnote-eef4b.web.app/";
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  });
+  if(signout) {
+    signout.addEventListener("click", () => {
+      signOut(auth)
+        .then(() => {
+          window.location.href = "../index.html";
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    });
+  }
 }
 
     // docArchive = doc(db, "archive", noteId);
 //   });
 
-if (window.location.href == "https://snapnote-eef4b.web.app/html/notes.html") {
+if (window.location.href == "http://localhost:5000/html/notes.html") {
   showNotes();
 
   addNoteForm.addEventListener("submit", (e) => {
@@ -349,7 +351,7 @@ if (window.location.href == "https://snapnote-eef4b.web.app/html/notes.html") {
       showNotes();
     });
   });
-} else if (window.location.href == "https://snapnote-eef4b.web.app/html/archive.html") {
+} else if (window.location.href == "http://localhost:5000/html/archive.html") {
   colRef = collection(db, "archive")
   queries = query(colRef, where("userId","==",`${userId}`), orderBy("createdAt"))
   showNotes();
@@ -385,7 +387,7 @@ if (window.location.href == "https://snapnote-eef4b.web.app/html/notes.html") {
       showNotes();
     });
   });
-} else if (window.location.href == "https://snapnote-eef4b.web.app/html/labels.html") {
+} else if (window.location.href == "http://localhost:5000/html/labels.html") {
   var arrayOfLabel = [];
   colRef = collection(db, "notes")
   selectedLabel = "None";
@@ -445,7 +447,7 @@ onSnapshot(queries, (snapshot) => {
   });
 });
 
-if (window.location.href !== "https://snapnote-eef4b.web.app/html/settings.html" && window.location.href !== "https://snapnote-eef4b.web.app/html/login.html" && window.location.href !== "https://snapnote-eef4b.web.app/html/signup.html") {
+if (window.location.href !== "http://localhost:5000/html/settings.html" && window.location.href !== "http://localhost:5000/html/login.html" && window.location.href !== "http://localhost:5000/html/signup.html") {
   document
   .querySelector(".background .row")
   .addEventListener("click", function (event) {
@@ -466,9 +468,9 @@ if (window.location.href !== "https://snapnote-eef4b.web.app/html/settings.html"
   updateBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const docRef =
-      window.location.href == "https://snapnote-eef4b.web.app/html/notes.html"
+      window.location.href == "http://localhost:5000/html/notes.html"
         ? doc(db, "notes", noteId)
-        : window.location.href == "https://snapnote-eef4b.web.app/html/archive.html"
+        : window.location.href == "http://localhost:5000/html/archive.html"
         ? doc(db, "archive", noteId)
         : doc(db, "notes", noteId);
     updateDoc(docRef, {
@@ -477,7 +479,7 @@ if (window.location.href !== "https://snapnote-eef4b.web.app/html/settings.html"
       content: contentTag.value,
     }).then(() => {
       document.querySelector(".modal-header .btn-close").click();
-      if (window.location.href == "https://snapnote-eef4b.web.app/html/labels.html") {
+      if (window.location.href == "http://localhost:5000/html/labels.html") {
         window.location.reload();
       }
       showNotes();
@@ -487,9 +489,9 @@ if (window.location.href !== "https://snapnote-eef4b.web.app/html/settings.html"
   deleteBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const docRef =
-      window.location.href == "https://snapnote-eef4b.web.app/html/notes.html"
+      window.location.href == "http://localhost:5000/html/notes.html"
         ? doc(db, "notes", noteId)
-        : window.location.href == "https://snapnote-eef4b.web.app/html/archive.html"
+        : window.location.href == "http://localhost:5000/html/archive.html"
         ? doc(db, "archive", noteId)
         : doc(db, "notes", noteId);
     deleteDoc(docRef).then(() => {
